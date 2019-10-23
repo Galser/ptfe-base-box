@@ -1,5 +1,5 @@
 .vagrant
 packer_cache
-output-ubuntu-1804-vbox
-ubuntu-1804-vbox.box
+bionic64-for-ptfe-vbox.box
+output-bionic64-for-ptfe-vbox/
 Vagrantfile

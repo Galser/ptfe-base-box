@@ -1,0 +1,71 @@
+{
+    "variables": {
+      "name": "galser/bionic64-for-ptfe",
+      "build_name": "bionic64-for-ptfe",
+      "build_cpu_cores": "2",
+      "build_memory": "1024",
+      "cpu_cores": "1",
+      "memory": "512",
+      "disk_size": "40960",
+      "headless": "false",
+      "iso_checksum": "7d8e0055d663bffa27c1718685085626cb59346e7626ba3d3f476322271f573e",
+      "iso_checksum_type": "sha256",
+      "iso_url": "http://cdimage.ubuntu.com/releases/18.04.3/release/ubuntu-18.04.3-server-amd64.iso",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant"
+    },
+    "builders": [
+      {
+        "name": "{{ user `build_name` }}-vbox",
+        "vm_name": "{{ user `build_name` }}-vbox",
+        "boot_command":[
+            "<esc><f6><esc>",
+            "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+            "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+            "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+            "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+            "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+            "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+            "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+            "<bs><bs><bs><bs><bs><bs><bs><bs><bs><bs>",
+            "<bs><bs><bs>",            
+            "/install/linux ",
+            "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg ",
+            "debian-installer=en_US auto=true locale=en_US kbd-chooser/method=us ",
+            "hostname={{ user `build_name` }} ",
+            "console-setup/ask_detect=false keyboard-configuration/layoutcode=us ",
+            "initrd=/install/initrd.gz quiet --- <enter>"
+                ],
+                
+        "boot_wait": "5s",
+        "disk_size": "{{user `disk_size`}}",
+        "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+        "guest_os_type": "Ubuntu_64",
+        "headless": "{{user `headless`}}",
+        "http_directory": "http",
+        "iso_checksum": "{{user `iso_checksum`}}",
+        "iso_checksum_type": "{{user `iso_checksum_type`}}",
+        "iso_url": "{{user `iso_url`}}",
+        "shutdown_command": "echo 'vagrant' | sudo -S shutdown -P now",
+        "ssh_password": "{{user `ssh_username`}}",
+        "ssh_username": "{{user `ssh_password`}}",
+        "ssh_wait_timeout": "20m",
+        "type": "virtualbox-iso",        
+        "virtualbox_version_file": ".vbox_version"
+      }
+    ],
+    "provisioners": [
+        {
+          "execute_command": "echo 'vagrant' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
+          "script": "scripts/provision.sh",
+          "type": "shell"
+        }
+      ],    
+    "post-processors": [
+        {
+          "type": "vagrant",
+          "keep_input_artifact": true,
+          "output": "{{.BuildName}}.box"
+        }
+      ]
+  }
