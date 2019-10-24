@@ -174,6 +174,7 @@ Play around, but remember - this is **base box** - e.g. bare minimum Ubuntu Linu
  
 
 # TODO
+- [ ] replace Docker with slighly lower version. Righ now it is by accident too high, we need to fix it to 18.09.2
 - [ ] update readme with instructions
 
 
