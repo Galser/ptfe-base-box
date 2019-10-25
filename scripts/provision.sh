@@ -55,9 +55,25 @@ apt-get clean
 
 #Add some tools
 apt install -y curl wget
-# We nede Docker wfor air-gapped installs 
+# We nede Docker of specific version for air-gapped installs 
 #Add docker
-apt install -y docker.io 
+#apt-get install -y docker.io==
+DOCKER_CE_VER="5:18.09.2~3-0~ubuntu-bionic"
+# remove default (if any leftovers)
+apt-get remove -y docker docker-engine docker.io containerd runc
+# allow to use/add repos over https
+apt-get install  -y apt-transport-https  ca-certificates   gnupg-agent  software-properties-common
+# add key
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+# add repo
+add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+# install the REQUIRED version
+apt-get install -y docker-ce=$DOCKER_CE_VER docker-ce-cli=$DOCKER_CE_VER containerd.io
+
+
 # Enable it and ensure start on boot
 systemctl start docker
 systemctl enable docker
