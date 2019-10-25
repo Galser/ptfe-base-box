@@ -31,8 +31,9 @@ cd ptfe-base-box
 - Now to create the Vagrant base box we are going to use Packer and [template](templates.json) with [provision scripts](scripts/provision.sh) provided in this repo.
 *Note: It is going to take some time, as Packer need to download the full ISO image of the operating system, run it, make installation and all required adjustments and then pack everything into format suitable for consuming by Vagrant running with VirtualBox*
 ```
-packer build template.json
+packer build -force template.json
 ```
+> Note usage of `-force` option to overwrite any previous existing images
 
 In case of successful process completion you would see these lines :
 ```
@@ -206,8 +207,6 @@ And to search for proper package in Docker CE repo, and use it:
 
 
 # TODO
-- [ ] replace Docker with slighly lower version. Righ now it is by accident too high, we need to fix it to 18.09.2
-- [ ] update readme with instructions
 
 
 # DONE
@@ -219,3 +218,5 @@ And to search for proper package in Docker CE repo, and use it:
 - [x] tune packer template, for PTFE requirements
 - [x] test box
 - [x] add steps to publish box on vagrant cloud using `vagrant cloud publish`
+- [x] replace Docker with slighly lower version. Righ now it is by accident too high, we need to fix it to 18.09.2
+- [x] update readme with instructions
