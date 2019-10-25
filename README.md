@@ -6,12 +6,16 @@ For the corresponding technologies mentioned here see in details [Prerequisite s
 
 *¹* - *There are a special category of boxes known as "base boxes." These boxes contain the bare minimum required for Vagrant to function, are generally not made by repackaging an existing Vagrant environment (hence the "base" in the "base box").*
 
+# Box Versions
+
+- `0.0.2` at *25/10/2019* : Freezed docker to version 18.09.2 (for TFE Airgapped installs)
+- `0.0.1` at *23/10/2019* : Basic box for PTFE
+
 # Purpose 
 
 This repository attempts to have minimal amount of code that is required to create an Ubuntu Bionic Beaver 64it box using Packer for running in VirtualBox with management by Vagrant. You should have Packer, Vagrant and VirtualBox installed. 
 
 To learn more about the mentioned above tools and technologies -  please check section [Technologies near the end of the README](#technologies)
-
 
 # How to use
 - Clone this repo
@@ -171,7 +175,35 @@ Play around, but remember - this is **base box** - e.g. bare minimum Ubuntu Linu
 6. **Terraform Enterprise** - is HashiCorp's self-hosted distribution of Terraform Cloud. It offers enterprises a private instance of the Terraform Cloud application, with no resource limits and with additional enterprise-grade architectural features like audit logging and SAML single sign-on.
 *Terraform Cloud* is an application that helps teams use Terraform together. It manages Terraform runs in a consistent and reliable environment, and includes easy access to shared state and secret data, access controls for approving changes to infrastructure, a private registry for sharing Terraform modules, detailed policy controls for governing the contents of Terraform configurations, and more. You can read more [here](https://www.terraform.io/docs/enterprise/index.html)
 
- 
+
+# Notes
+
+## Docker version
+As of now (25/10/2019) TFE requires specific verson of Docker - 1.7.1 or later, minimum 17.06.2-ce, maximum 18.09.2. And in case of default docker image for Ubuntu 18.04 we getting 18.09.06
+So we need to add specific Docker repo and use it, this done in [scripts/provision.sh](scripts/provision.sh), excerpt below  : 
+  ```bash
+  ...
+  DOCKER_CE_VER="5:18.09.2~3-0~ubuntu-bionic"
+  # remove default (if any leftovers)
+  apt-get remove -y docker docker-engine docker.io containerd runc
+  # allow to use/add repos over https
+  apt-get install  -y apt-transport-https  ca-certificates   gnupg-agent  software-properties-common
+  # add key
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  # add repo
+  add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+    $(lsb_release -cs) \
+    stable"
+  # install the REQUIRED version
+  apt-get install -y docker-ce=$DOCKER_CE_VER docker-ce-cli=$DOCKER_CE_VER containerd.io
+  ...
+  ```
+And to search for proper package in Docker CE repo, and use it: 
+  ```bash
+  apt-cache madison docker-ce
+  ```
+
 
 # TODO
 - [ ] replace Docker with slighly lower version. Righ now it is by accident too high, we need to fix it to 18.09.2
